@@ -1,0 +1,299 @@
+"""
+CreditPath – Smart Credit & Finance Tracker
+Author: Thaija Wilson
+
+This application allows users to:
+- Track savings
+- Record debt payments
+- Set financial goals
+- View progress visually
+- Save and load data securely
+- View a financial summary window
+
+The program demonstrates:
+- Object-Oriented Programming
+- Input validation
+- File handling (JSON)
+- Multiple windows in tkinter
+- Embedded matplotlib charts
+"""
+
+# -------------------- IMPORTS --------------------
+
+import tkinter as tk                     # GUI framework
+from tkinter import messagebox           # For popup messages
+from tkinter import filedialog           # For save/load dialogs
+from tkinter.ttk import Progressbar      # For progress bar widget
+import json                              # For saving/loading data
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt          # For charts
+import random                            # For random quotes
+
+# -------------------- QUOTES --------------------
+
+# List of motivational financial quotes
+QUOTES = [
+    "💰 Save today, enjoy tomorrow!",
+    "🌱 Small savings grow into big dreams.",
+    "📈 Your future self will thank you!",
+    "🏠 Save smart, buy big.",
+    "💳 Control your credit, control your life!"
+]
+
+# -------------------- MAIN APPLICATION CLASS --------------------
+
+class CreditPathApp:
+    """
+    Main GUI application class.
+    Handles all financial tracking logic and user interface.
+    """
+
+    def __init__(self, root):
+        """Initialize application window and variables."""
+        self.root = root
+        self.root.title("CreditPath – Smart Credit & Finance Tracker")
+        self.root.geometry("650x750")
+        self.root.resizable(False, False)
+
+        # -------------------- VARIABLES --------------------
+
+        self.savings = tk.IntVar(value=0)      # Stores total savings
+        self.debt = tk.IntVar(value=0)         # Stores total debt
+        self.amount = tk.IntVar()              # Entry value for savings
+        self.debt_amount = tk.IntVar()         # Entry value for debt
+        self.goal = tk.IntVar(value=1000)      # Savings goal
+        self.level = tk.IntVar(value=1)        # User level
+
+        # Build GUI
+        self.create_widgets()
+        self.update_chart()
+
+    # -------------------- GUI CREATION --------------------
+
+    def create_widgets(self):
+        """Create and organize all widgets in the main window."""
+
+        # Title
+        tk.Label(self.root, text="CreditPath",
+                 font=("Arial", 18, "bold")).pack(pady=5)
+
+        tk.Label(self.root,
+                 text="Track savings, manage debt, and plan for big purchases!",
+                 font=("Arial", 10)).pack(pady=5)
+
+        # Motivational Quote
+        self.quote_label = tk.Label(self.root,
+                                    text=random.choice(QUOTES),
+                                    font=("Arial", 10, "italic"),
+                                    fg="green")
+        self.quote_label.pack(pady=5)
+
+        # -------------------- IMAGE SECTION --------------------
+
+        # Image 1 (Savings Icon)
+        self.savings_image = tk.PhotoImage(file="savings.png")
+        tk.Label(self.root,
+                 image=self.savings_image).pack()
+        tk.Label(self.root,
+                 text="Savings Icon Image",
+                 font=("Arial", 8)).pack()   # Alt text
+
+        # Image 2 (Debt Icon)
+        self.debt_image = tk.PhotoImage(file="debt.png")
+        tk.Label(self.root,
+                 image=self.debt_image).pack()
+        tk.Label(self.root,
+                 text="Debt Icon Image",
+                 font=("Arial", 8)).pack()   # Alt text
+
+        # -------------------- INPUT SECTION --------------------
+
+        tk.Label(self.root, text="Add to Savings:").pack()
+        tk.Entry(self.root, textvariable=self.amount).pack(pady=2)
+        tk.Button(self.root, text="Add Savings",
+                  command=self.add_savings).pack(pady=2)
+
+        tk.Label(self.root, text="Add Debt Payment:").pack()
+        tk.Entry(self.root, textvariable=self.debt_amount).pack(pady=2)
+        tk.Button(self.root, text="Add Debt Payment",
+                  command=self.add_debt).pack(pady=2)
+
+        # -------------------- DISPLAY SECTION --------------------
+
+        tk.Label(self.root, text="Total Savings:").pack()
+        tk.Label(self.root, textvariable=self.savings,
+                 font=("Arial", 12, "bold")).pack()
+
+        tk.Label(self.root, text="Current Debt:").pack()
+        tk.Label(self.root, textvariable=self.debt,
+                 font=("Arial", 12, "bold")).pack()
+
+        tk.Label(self.root, text="Savings Goal:").pack()
+        tk.Entry(self.root, textvariable=self.goal).pack(pady=2)
+
+        # Progress Bar
+        self.progress_bar = Progressbar(self.root,
+                                        length=400,
+                                        maximum=100)
+        self.progress_bar.pack(pady=10)
+
+        # Level Label
+        self.level_label = tk.Label(self.root,
+                                    text="Level: Budget Beginner 🌱",
+                                    font=("Arial", 10, "italic"))
+        self.level_label.pack(pady=5)
+
+        # -------------------- CHART SECTION --------------------
+
+        self.figure, self.ax = plt.subplots(figsize=(4, 2))
+        self.chart_canvas = FigureCanvasTkAgg(self.figure,
+                                              master=self.root)
+        self.chart_canvas.get_tk_widget().pack(pady=10)
+
+        # -------------------- BUTTON SECTION --------------------
+
+        tk.Button(self.root, text="Open Summary Window",
+                  command=self.open_summary_window,
+                  width=25).pack(pady=2)
+
+        tk.Button(self.root, text="Save Progress",
+                  command=self.save_progress,
+                  width=25).pack(pady=2)
+
+        tk.Button(self.root, text="Load Progress",
+                  command=self.load_progress,
+                  width=25).pack(pady=2)
+
+        tk.Button(self.root, text="Reset All",
+                  command=self.reset_data,
+                  width=25).pack(pady=2)
+
+        tk.Button(self.root, text="Exit Application",
+                  command=self.root.quit,
+                  width=25).pack(pady=2)
+
+    # -------------------- FUNCTIONAL METHODS --------------------
+
+    def add_savings(self):
+        """Add savings amount with input validation."""
+        try:
+            value = self.amount.get()
+            if value <= 0:
+                raise ValueError
+
+            self.savings.set(self.savings.get() + value)
+            self.amount.set(0)
+
+            self.update_progress()
+            self.check_level()
+            self.update_chart()
+            self.show_random_quote()
+
+            messagebox.showinfo("Success", "Savings updated! 💰")
+
+        except ValueError:
+            messagebox.showerror("Error",
+                                 "Enter a positive number!")
+
+    def add_debt(self):
+        """Add debt payment with validation."""
+        try:
+            value = self.debt_amount.get()
+            if value <= 0:
+                raise ValueError
+
+            self.debt.set(self.debt.get() + value)
+            self.debt_amount.set(0)
+
+            self.update_chart()
+            self.show_random_quote()
+
+            messagebox.showinfo("Success",
+                                "Debt payment recorded! 💳")
+
+        except ValueError:
+            messagebox.showerror("Error",
+                                 "Enter a positive number!")
+
+    def update_progress(self):
+        """Update progress bar based on savings goal."""
+        if self.goal.get() > 0:
+            progress = (self.savings.get() /
+                        self.goal.get()) * 100
+            self.progress_bar["value"] = min(progress, 100)
+
+            if progress >= 100:
+                messagebox.showinfo("Achievement!",
+                                    "🏠 Savings goal reached!")
+
+    def check_level(self):
+        """Update financial level based on savings."""
+        savings = self.savings.get()
+
+        if savings >= 5000:
+            self.level_label.config(
+                text="Level: Home Buyer Ready 🏠")
+        elif savings >= 2500:
+            self.level_label.config(
+                text="Level: Financial Planner 📊")
+        elif savings >= 1000:
+            self.level_label.config(
+                text="Level: Credit Builder 💳")
+        else:
+            self.level_label.config(
+                text="Level: Budget Beginner 🌱")
+
+    def update_chart(self):
+        """Redraw savings vs debt chart."""
+        self.ax.clear()
+
+        categories = ['Savings', 'Debt']
+        values = [self.savings.get(),
+                  self.debt.get()]
+
+        self.ax.bar(categories, values)
+        self.ax.set_title('Savings vs Debt')
+
+        self.chart_canvas.draw()
+
+    def show_random_quote(self):
+        """Display a new random motivational quote."""
+        self.quote_label.config(
+            text=random.choice(QUOTES))
+
+    def save_progress(self):
+        """Save financial data to JSON file."""
+        data = {
+            'savings': self.savings.get(),
+            'debt': self.debt.get(),
+            'goal': self.goal.get()
+        }
+
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json")]
+        )
+
+        if file_path:
+            with open(file_path, "w") as f:
+                json.dump(data, f)
+
+            messagebox.showinfo("Saved",
+                                "Progress saved successfully!")
+
+    def load_progress(self):
+        """Load financial data from JSON file."""
+        file_path = filedialog.askopenfilename(
+            filetypes=[("JSON files", "*.json")]
+        )
+
+        if file_path:
+            try:
+                with open(file_path, "r") as f:
+                    data = json.load(f)
+
+                self.savings.set(data.get('savings', 0))
+                self.debt.set(data.get('debt', 0))
+                self.goal.set(data.get('goal', 1000))
+
+                self.update_progress()
