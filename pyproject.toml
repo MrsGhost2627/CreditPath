@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61", "wheel", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "CreditPath"
+version = "0.1.0"
+description = "CreditPath — Smart Credit & Finance Tracker (Tkinter)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [ { name = "Thaija Wilson" } ]
+keywords = ["finance", "credit", "tkinter", "savings"]
+
+dependencies = []
