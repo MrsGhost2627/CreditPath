@@ -81,3 +81,12 @@ Goal reached → Success message displayed
 File load with invalid JSON → Error handled
 
 All tests passed successfully after validation improvements.
+
+User Manual
+
+See UserManual.docx for detailed instructions on how to use the application.
+
+👩🏽‍💻 Author
+
+Thaija Wilson
+Final Project – Python GUI Development
