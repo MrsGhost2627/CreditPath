@@ -1,28 +1,83 @@
-💳 CreditPath – Financial Literacy GUI Application
+💳 CreditPath – Smart Finance Tracker
 📖 Overview
 
-CreditPath is a Python based Tkinter GUI application designed to help users understand and evaluate key credit score factors.
+CreditPath is a Python desktop application built using CustomTkinter.
+It helps users track savings, debt payments, financial goals, and visualize progress using dynamic charts.
 
-The application provides interactive input fields, validation, real-time calculations, visual feedback, and motivational reinforcement to encourage positive financial habits.
+The application demonstrates:
 
-This project demonstrates:
+Object-Oriented Programming
 
-GUI development using Tkinter
+Event-Driven GUI Design
 
-Modular programming structure
+Modular Code Structure
 
-Secure input validation
+Secure Input Validation
 
-Event-driven architecture
+Data Visualization with Matplotlib
 
-Data visualization integration
+File Handling with JSON
 
 🛠 Technologies Used
 
 Python 3
 
-Tkinter (GUI framework)
+CustomTkinter
 
-Matplotlib (Data visualization)
+Matplotlib
 
-VS Code (Development environment)
+JSON (data storage)
+
+🚀 Installation
+
+Clone the repository:
+
+git clone https://github.com/MrsGhost2627/CreditPath.git
+
+Navigate into the project folder:
+
+cd CreditPath
+
+Install dependencies:
+
+pip install -r requirements.txt
+
+Run the program:
+
+python CreditPath.py
+🖥 Features
+
+✔ Two Windows (Main + Summary)
+✔ Savings and Debt Tracking
+✔ Goal Progress Bar
+✔ Embedded Chart (Savings vs Debt)
+✔ Save & Load Data (JSON files)
+✔ Secure Input Validation
+✔ Error Handling
+✔ Reset Functionality
+
+🔐 Secure Coding Practices
+
+Input validation prevents empty or invalid entries
+
+Exception handling prevents application crashes
+
+File handling includes error catching
+
+User confirmation required before resetting data
+
+🧪 Validation Testing
+
+Test Cases Used:
+
+Valid numeric inputs → Program updates correctly
+
+Empty input → Error message shown
+
+Negative or invalid input → Rejected
+
+Goal reached → Success message displayed
+
+File load with invalid JSON → Error handled
+
+All tests passed successfully after validation improvements.
