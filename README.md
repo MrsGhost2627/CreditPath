@@ -82,6 +82,9 @@ File load with invalid JSON → Error handled
 
 All tests passed successfully after validation improvements.
 
+![Main Window](creditpath.PNG)
+![Summary Window](screenshots/summary_window.png)
+
 User Manual
 
 See UserManual.docx for detailed instructions on how to use the application.
